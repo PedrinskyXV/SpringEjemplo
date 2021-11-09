@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Pedro Perez">
+    <title>MVC · PRODUCTOS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+        integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />    
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/themes@5.0.7/dark/dark.min.css">
+</head>
+
+<body class="bg-light text-white">
+    <header>
+        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-2 shadow">
+            <div class="container ">
+                <a class="navbar-brand col-md-12 col-lg-12 mr-0 py-3 fw-bold text-center" href="#">SPRING BOOST + SPRING
+                    MVC + HIBERNATE</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="col-md-8 col-lg-12 p-5 my-5 mx-auto">
+        <div class="text-center">
+            <table class="table table-responsive table-striped table-hover">
+                <div class="table-title bg-warning align-items-center py-3">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h2 class="text-dark">Administrar<b> Productos</b></h2>
+                        </div>
+                        <div class="col-sm-6 my-auto">
+                            <a class="btn btn-dark w-75 fw-bold" th:href="@{/productos/agregarProducto}"
+                                role="button"><i class="fa fa-cart-plus" aria-hidden="true"></i>&nbsp;Agregar
+                                Producto</a>
+                        </div>
+                    </div>
+                </div>
+                <caption>Lista actual de productos</caption>
+                <thead class="table-dark">
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Marca</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th>Opciones</th>
+                    </tr>
+                </thead>
+
+                <tbody th:switch="${productos}">
+
+                    <tr th:case="null">
+                        <td colspan="6" class="text-center fw-bold"><i class="fa fa-warning" aria-hidden="true"></i> No
+                            hay productos ingresados.</td>
+                    </tr>
+
+                    <div th:case="*">
+                        <tr th:each="producto : ${productos}">
+                            <th th:text="${producto.codigo}"></th>
+                            <td th:text="${producto.nombre}"></td>
+                            <td th:text="${producto.marca.nombre}"></td>
+                            <td>$[[${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}]]</td>
+                            <td>
+                                <th:block th:if="${producto.estado} eq '1'">
+                                    <span class="badge rounded-pill bg-success">Disponible</span>
+                                </th:block>
+                                <th:block th:unless="${producto.estado} eq '1'">
+                                    <span class="badge rounded-pill bg-secondary">No Disponible</span>
+                                </th:block>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a th:href="@{/productos/editar/{codigo}(codigo = ${producto.codigo})}"
+                                        class="btn btn-primary fw-bold"> <i class="fa fa-refresh"
+                                            aria-hidden="true"></i>
+                                        Editar</a>
+                                    <a th:href="@{/productos/eliminar/{codigo}(codigo = ${producto.codigo})}"
+                                        class="btn btn-danger fw-bold" name="btnEliminar"> <i class="fa fa-trash"
+                                            aria-hidden="true"></i> Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </div>
+
+                </tbody>
+            </table>
+        </div>
+        <span th:text="${msg}"></span>
+        <span th:text="${icon}"></span>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/js/all.min.js"
+        integrity="sha512-cyAbuGborsD25bhT/uz++wPqrh5cqPh1ULJz4NSpN9ktWcA6Hnh9g+CWKeNx2R0fgQt+ybRXdabSBgYXkQTTmA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        function mostrarAlerta(icono, titulo) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: toast => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                }
+            });
+
+            Toast.fire({
+                icon: icono,
+                title: titulo
+            });
+        }
+    </script>
+
+    <th:block th:if="${msg} ne null">
+        
+        <script>
+            mostrarAlerta('[[${icon}]]', '[[${msg}]]');
+        </script>
+    </th:block>
+
+
+</body>
+
+
+</html>
